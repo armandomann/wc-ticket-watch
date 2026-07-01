@@ -242,20 +242,27 @@ def offer_key(o):
     return f"{o['source']}:{o.get('section')}|{o.get('row')}|{o.get('qty')}"
 
 
+def seat_sort_key(o):
+    """Group by seat location so the same tickets listed on different
+    marketplaces sit next to each other; cheapest first as the tiebreak."""
+    return (str(o.get("section") or ""), str(o.get("row") or ""),
+            o.get("qty") or 0, o["price"])
+
+
 def fmt_offer(o):
     total = o["price"] * QUANTITY
-    return (f"  ${o['price']:,.0f}/tk · {o['source']} · "
-            f"Sec {o.get('section') or '?'}, Row {o.get('row') or '?'} · "
-            f"listing of {o.get('qty')} · ${total:,.0f} for {QUANTITY}\n"
+    return (f"  Sec {o.get('section') or '?'} · Row {o.get('row') or '?'} · "
+            f"{o.get('qty')} seats · ${o['price']:,.0f}/tk · {o['source']}"
+            f"  (${total:,.0f} for {QUANTITY})\n"
             f"    {o['url']}")
 
 
 def fmt_change(o, old):
     arrow = "🔻" if o["price"] < old else "🔺"
     total = o["price"] * QUANTITY
-    return (f"  {arrow} ${old:,.0f} → ${o['price']:,.0f}/tk · {o['source']} · "
-            f"Sec {o.get('section') or '?'}, Row {o.get('row') or '?'} · "
-            f"listing of {o.get('qty')} · ${total:,.0f} for {QUANTITY}\n"
+    return (f"  Sec {o.get('section') or '?'} · Row {o.get('row') or '?'} · "
+            f"{o.get('qty')} seats · {arrow} ${old:,.0f} → ${o['price']:,.0f}/tk · {o['source']}"
+            f"  (${total:,.0f} for {QUANTITY})\n"
             f"    {o['url']}")
 
 
@@ -368,15 +375,16 @@ def main():
                  f"Checked {now}", ""]
         if new_finds:
             lines.append(f"🆕 NEW FINDS ({len(new_finds)})")
-            lines += [fmt_offer(o) for o in new_finds]
+            lines += [fmt_offer(o) for o in sorted(new_finds, key=seat_sort_key)]
             lines.append("")
         if changes:
             lines.append(f"🔄 PRICE CHANGES ({len(changes)})")
-            lines += [fmt_change(o, old) for o, old in changes]
+            lines += [fmt_change(o, old) for o, old
+                      in sorted(changes, key=lambda c: seat_sort_key(c[0]))]
             lines.append("")
         if repeats:
             lines.append(f"📋 STILL AVAILABLE ({len(repeats)}) — unchanged since last alert")
-            lines += [fmt_offer(o) for o in repeats]
+            lines += [fmt_offer(o) for o in sorted(repeats, key=seat_sort_key)]
             lines.append("")
         lines.append(f"Cheapest per market: {summary}")
         send_email(subject, "\n".join(lines))
