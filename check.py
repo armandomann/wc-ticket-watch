@@ -39,7 +39,7 @@ VIVID_URL = os.environ.get(
     "https://www.vividseats.com/world-cup-soccer-tickets-mercedes-benz-stadium-7-7-2026--sports-soccer/production/5080860").strip()
 
 SOURCES = [s.strip() for s in os.environ.get("SOURCES", "stubhub,vividseats").split(",") if s.strip()]
-QUANTITY = int(os.environ.get("QUANTITY", "6"))
+QUANTITY = int(os.environ.get("QUANTITY") or "6")
 
 # Optional target. When set, the watcher goes QUIET and only emails when a
 # 6-together offer is at/below this per-ticket price (a "tell me when it's a deal"
