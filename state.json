@@ -1,8 +1,8 @@
 {
   "consecutive_fetch_failures": 0,
   "notified_at_or_below": true,
-  "last_best_price": 2100.69,
-  "last_checked": "2026-07-01 13:41 UTC",
+  "last_best_price": 2029.72,
+  "last_checked": "2026-07-01 14:06 UTC",
   "last_best": {
     "source": "StubHub",
     "section": "325",
@@ -11,21 +11,14 @@
     "total": 9877.44
   },
   "by_source": {
-    "viagogo": 2100.69,
-    "StubHub": 2289.69,
-    "Vivid Seats": 2299.11
+    "viagogo": 2029.72,
+    "Vivid Seats": 2299.11,
+    "StubHub": 2413.2
   },
   "listings": {
     "viagogo:13202076928": {
-      "price": 2100.69,
+      "price": 2029.72,
       "source": "viagogo",
-      "section": "116",
-      "row": "46",
-      "qty": 8
-    },
-    "StubHub:13202076928": {
-      "price": 2289.69,
-      "source": "StubHub",
       "section": "116",
       "row": "46",
       "qty": 8
@@ -57,6 +50,13 @@
       "section": "326",
       "row": "14",
       "qty": 12
+    },
+    "StubHub:13202076928": {
+      "price": 2413.2,
+      "source": "StubHub",
+      "section": "116",
+      "row": "46",
+      "qty": 8
     },
     "Vivid Seats:318|8|6": {
       "price": 2432.07,
