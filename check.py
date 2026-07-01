@@ -61,9 +61,11 @@ STATE_FILE = env("STATE_FILE", "state.json")
 
 SMTP_HOST = env("SMTP_HOST", "smtp.gmail.com")
 SMTP_PORT = int(env("SMTP_PORT", "587"))
-SMTP_USER = env("SMTP_USER")
-SMTP_PASS = env("SMTP_PASS")
-EMAIL_TO = env("EMAIL_TO", SMTP_USER)
+SMTP_USER = env("SMTP_USER").strip()
+# Gmail shows app passwords as 4 space-separated groups ("abcd efgh ijkl mnop");
+# they must be sent with no spaces, so strip all whitespace defensively.
+SMTP_PASS = "".join(env("SMTP_PASS").split())
+EMAIL_TO = env("EMAIL_TO", SMTP_USER).strip()
 
 UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36")
