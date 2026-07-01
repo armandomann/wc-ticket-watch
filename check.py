@@ -30,30 +30,40 @@ from email.message import EmailMessage
 
 # ---- Config -----------------------------------------------------------------
 
+def env(name, default=""):
+    """Env var value, falling back to `default` when unset OR empty.
+
+    GitHub Actions passes `${{ vars.X }}` as an empty string when the variable
+    isn't set, so a plain os.environ.get(name, default) would return "" and
+    clobber the default. Treat empty the same as unset.
+    """
+    v = os.environ.get(name)
+    return v if v not in (None, "") else default
+
 # Match 95 = Round of 16, W86 vs W88, Mercedes-Benz Stadium Atlanta, Jul 7 2026.
-STUBHUB_URL = os.environ.get(
+STUBHUB_URL = env(
     "STUBHUB_URL",
     "https://www.stubhub.com/world-cup-atlanta-tickets-7-7-2026/event/155049347/").strip()
-VIVID_URL = os.environ.get(
+VIVID_URL = env(
     "VIVID_URL",
     "https://www.vividseats.com/world-cup-soccer-tickets-mercedes-benz-stadium-7-7-2026--sports-soccer/production/5080860").strip()
 
-SOURCES = [s.strip() for s in os.environ.get("SOURCES", "stubhub,vividseats").split(",") if s.strip()]
-QUANTITY = int(os.environ.get("QUANTITY") or "6")
+SOURCES = [s.strip() for s in env("SOURCES", "stubhub,vividseats").split(",") if s.strip()]
+QUANTITY = int(env("QUANTITY", "6"))
 
 # Optional target. When set, the watcher goes QUIET and only emails when a
 # 6-together offer is at/below this per-ticket price (a "tell me when it's a deal"
 # mode). When unset, it emails on first appearance and every price drop.
-MAX_PRICE = os.environ.get("MAX_PRICE")
-MAX_PRICE = float(MAX_PRICE) if MAX_PRICE not in (None, "") else None
+MAX_PRICE = env("MAX_PRICE")
+MAX_PRICE = float(MAX_PRICE) if MAX_PRICE else None
 
-STATE_FILE = os.environ.get("STATE_FILE", "state.json")
+STATE_FILE = env("STATE_FILE", "state.json")
 
-SMTP_HOST = os.environ.get("SMTP_HOST", "smtp.gmail.com")
-SMTP_PORT = int(os.environ.get("SMTP_PORT", "587"))
-SMTP_USER = os.environ.get("SMTP_USER", "")
-SMTP_PASS = os.environ.get("SMTP_PASS", "")
-EMAIL_TO = os.environ.get("EMAIL_TO", SMTP_USER)
+SMTP_HOST = env("SMTP_HOST", "smtp.gmail.com")
+SMTP_PORT = int(env("SMTP_PORT", "587"))
+SMTP_USER = env("SMTP_USER")
+SMTP_PASS = env("SMTP_PASS")
+EMAIL_TO = env("EMAIL_TO", SMTP_USER)
 
 UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36")
