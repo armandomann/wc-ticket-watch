@@ -40,14 +40,15 @@ Free on GitHub Actions, every 30 min.
    git push -u origin main
    ```
    (Or with the GitHub CLI: `gh repo create wc-ticket-watch --private --source=. --push`.)
-2. **Gmail App Password** — turn on 2‑Step Verification, then create one at
+2. **Gmail App Password** — on the **sending** account `agentcodymann@gmail.com`,
+   turn on 2‑Step Verification, then create one at
    https://myaccount.google.com/apppasswords
 3. In the repo → **Settings → Secrets and variables → Actions**:
    - **Secrets** → New repository secret:
-     - `SMTP_USER` = `armandomann@gmail.com`
-     - `SMTP_PASS` = the 16‑char app password
+     - `SMTP_USER` = `agentcodymann@gmail.com`  *(sender)*
+     - `SMTP_PASS` = the 16‑char app password for that account
    - **Variables** → New repository variable:
-     - `EMAIL_TO` = `armandomann@gmail.com`
+     - `EMAIL_TO` = `armandomann@gmail.com`  *(where alerts land)*
      - *(optional)* `MAX_PRICE`, `QUANTITY` (default 6), `SOURCES` (default
        `stubhub,vividseats`; set to `stubhub` if Vivid gets challenged on CI).
 4. **Actions** tab → enable workflows → **Run workflow** once to test. It then
