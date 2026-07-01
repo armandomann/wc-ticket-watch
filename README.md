@@ -59,6 +59,30 @@ Free on GitHub Actions, every 30 min.
 > be challenged harder there. If checks stop, the script emails you after ~3 straight
 > failures — switch to Option B, or set `SOURCES=stubhub`.
 
+### If GitHub's scheduler won't start (external pinger)
+
+GitHub often doesn't begin firing a **new** repo's `schedule:` for several hours,
+and drops cron under load. To trigger runs reliably from outside GitHub, have a
+free cron service call the workflow-dispatch API every 30 min:
+
+1. **Create a fine-grained token** at
+   <https://github.com/settings/personal-access-tokens/new> →
+   *Resource owner* = you, *Repository access* = **Only select repositories →
+   `wc-ticket-watch`**, *Permissions → Repository → Actions* = **Read and write**.
+   Set expiration past Jul 7. Copy the `github_pat_…` value.
+2. **Create a cron job** at <https://cron-job.org> (free) that runs **every 30 min**:
+   - **URL** `https://api.github.com/repos/<you>/wc-ticket-watch/actions/workflows/watch.yml/dispatches`
+   - **Method** `POST`
+   - **Headers**:
+     - `Authorization: Bearer github_pat_…`
+     - `Accept: application/vnd.github+json`
+     - `X-GitHub-Api-Version: 2022-11-28`
+   - **Body** `{"ref":"main"}`
+3. Save/enable, then hit **Run now** once — a run should appear in the Actions tab
+   within seconds. This runs in the cloud regardless of whether your Mac is on.
+
+A `204 No Content` response from the API means success. Revoke the token after Jul 7.
+
 ## Option B — Local on your Mac (most reliable IP, only runs while awake)
 
 1. `cp config.example.env config.env` and fill in your Gmail app password.
