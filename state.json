@@ -2,7 +2,7 @@
   "consecutive_fetch_failures": 0,
   "notified_at_or_below": true,
   "last_best_price": 2344.59,
-  "last_checked": "2026-07-01 17:06 UTC",
+  "last_checked": "2026-07-01 17:37 UTC",
   "last_best": {
     "source": "StubHub",
     "section": "325",
@@ -11,8 +11,7 @@
     "total": 9877.44
   },
   "by_source": {
-    "Vivid Seats": 2344.59,
-    "viagogo": 3285.46
+    "Vivid Seats": 2344.59
   },
   "listings": {
     "Vivid Seats:325|18|6": {
