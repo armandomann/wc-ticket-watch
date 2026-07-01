@@ -1,0 +1,56 @@
+name: WC Match 95 ticket watch
+
+# Runs every 30 minutes in GitHub's cloud (works while your Mac is off).
+# GitHub cron can be delayed a few minutes under load; that's fine here.
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch: {}   # manual "Run workflow" button in the Actions tab
+
+permissions:
+  contents: write         # allow committing state.json back
+
+concurrency:
+  group: wc-watch
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Only needed for the Vivid Seats (browser) source. StubHub works without it.
+      - name: Install browser for Vivid Seats source
+        run: |
+          pip install playwright
+          python -m playwright install --with-deps chromium
+
+      - name: Check ticket prices
+        env:
+          # SOURCES: use "stubhub,vividseats" for both, or "stubhub" if Vivid gets
+          # bot-challenged on GitHub's IPs (see README).
+          SOURCES: ${{ vars.SOURCES || 'stubhub,vividseats' }}
+          STUBHUB_URL: ${{ vars.STUBHUB_URL }}
+          VIVID_URL: ${{ vars.VIVID_URL }}
+          QUANTITY: ${{ vars.QUANTITY }}
+          MAX_PRICE: ${{ vars.MAX_PRICE }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          EMAIL_TO: ${{ vars.EMAIL_TO }}
+        run: python3 check.py
+
+      - name: Persist state
+        if: always()
+        run: |
+          if [ -n "$(git status --porcelain state.json)" ]; then
+            git config user.name "ticket-watch-bot"
+            git config user.email "actions@github.com"
+            git add state.json
+            git commit -m "update state [skip ci]"
+            git push
+          fi

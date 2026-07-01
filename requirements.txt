@@ -1,0 +1,4 @@
+# StubHub source needs nothing (Python 3.9+ stdlib only).
+# Vivid Seats source needs a headless browser:
+playwright>=1.40
+# After installing: python3 -m playwright install chromium
