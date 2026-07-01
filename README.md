@@ -11,6 +11,7 @@ Mercedes‑Benz Stadium, Atlanta, **Tue Jul 7 2026, 12:00pm ET**.
 | Source | How | Notes |
 |---|---|---|
 | **StubHub** | plain HTTP, zero deps | Reads listing data embedded in the page. |
+| **viagogo** | plain HTTP, zero deps | StubHub's sibling platform (same event id/format) — often prices the *same* listing differently, so it's useful for cross‑market comparison. |
 | **Vivid Seats** | headless browser (`playwright`) | Full inventory (800+ listings); passes the site's bot‑challenge and reads its listings API. |
 
 > SeatGeek (HTTP 403) and TickPick (Cloudflare) hard‑block automated requests, so

@@ -34,9 +34,10 @@ jobs:
         env:
           # SOURCES: use "stubhub,vividseats" for both, or "stubhub" if Vivid gets
           # bot-challenged on GitHub's IPs (see README).
-          SOURCES: ${{ vars.SOURCES || 'stubhub,vividseats' }}
+          SOURCES: ${{ vars.SOURCES || 'stubhub,viagogo,vividseats' }}
           STUBHUB_URL: ${{ vars.STUBHUB_URL }}
           VIVID_URL: ${{ vars.VIVID_URL }}
+          VIAGOGO_URL: ${{ vars.VIAGOGO_URL }}
           QUANTITY: ${{ vars.QUANTITY }}
           MAX_PRICE: ${{ vars.MAX_PRICE }}
           PRICE_CHANGE_MIN: ${{ vars.PRICE_CHANGE_MIN }}

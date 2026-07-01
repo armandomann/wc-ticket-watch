@@ -47,8 +47,13 @@ STUBHUB_URL = env(
 VIVID_URL = env(
     "VIVID_URL",
     "https://www.vividseats.com/world-cup-soccer-tickets-mercedes-benz-stadium-7-7-2026--sports-soccer/production/5080860").strip()
+# viagogo is StubHub's sibling platform (same event id, same embedded data
+# format) but often prices differently — good for cross-market comparison.
+VIAGOGO_URL = env(
+    "VIAGOGO_URL",
+    "https://www.viagogo.com/Sports-Tickets/Soccer/Soccer-Tournament/World-Cup-Tickets/E-155049347").strip()
 
-SOURCES = [s.strip() for s in env("SOURCES", "stubhub,vividseats").split(",") if s.strip()]
+SOURCES = [s.strip() for s in env("SOURCES", "stubhub,viagogo,vividseats").split(",") if s.strip()]
 QUANTITY = int(env("QUANTITY", "6"))
 
 # Optional target. When set, the watcher goes QUIET and only emails when a
@@ -109,9 +114,12 @@ def _enclosing_object(s, pos):
     return None
 
 
-def source_stubhub():
-    """Return (offers, error). StubHub prices are already all-in (incl. fees)."""
-    req = urllib.request.Request(STUBHUB_URL, headers={
+def _scrape_sh_platform(page_url, source_name):
+    """StubHub and viagogo share one platform: listing data is embedded in the
+    page as JSON objects with rawPrice / listingId / isSeatedTogether /
+    availableQuantities. Prices are already all-in (incl. fees).
+    Returns (offers, error)."""
+    req = urllib.request.Request(page_url, headers={
         "User-Agent": UA,
         "Accept": "text/html,application/xhtml+xml,*/*;q=0.8",
         "Accept-Language": "en-US,en;q=0.9",
@@ -139,12 +147,12 @@ def source_stubhub():
         aq = o.get("availableQuantities") or []
         if QUANTITY in aq and o.get("isSeatedTogether", False):
             lid = o.get("listingId")
-            sep = "&" if "?" in STUBHUB_URL else "?"
-            url = f"{STUBHUB_URL}{sep}quantity={QUANTITY}"
+            sep = "&" if "?" in page_url else "?"
+            url = f"{page_url}{sep}quantity={QUANTITY}"
             if lid is not None:
                 url += f"&listingId={lid}"
             offers.append({
-                "source": "StubHub",
+                "source": source_name,
                 "price": float(o["rawPrice"]),
                 "qty": o.get("availableTickets"),
                 "section": o.get("section"),
@@ -153,6 +161,14 @@ def source_stubhub():
                 "url": url,
             })
     return offers, None
+
+
+def source_stubhub():
+    return _scrape_sh_platform(STUBHUB_URL, "StubHub")
+
+
+def source_viagogo():
+    return _scrape_sh_platform(VIAGOGO_URL, "viagogo")
 
 
 # ---- Source: Vivid Seats (headless browser) ---------------------------------
@@ -215,7 +231,8 @@ def source_vividseats():
     return offers, None
 
 
-SOURCE_FUNCS = {"stubhub": source_stubhub, "vividseats": source_vividseats}
+SOURCE_FUNCS = {"stubhub": source_stubhub, "viagogo": source_viagogo,
+                "vividseats": source_vividseats}
 
 
 # ---- State & email ----------------------------------------------------------
