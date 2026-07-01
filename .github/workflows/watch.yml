@@ -39,6 +39,7 @@ jobs:
           VIVID_URL: ${{ vars.VIVID_URL }}
           QUANTITY: ${{ vars.QUANTITY }}
           MAX_PRICE: ${{ vars.MAX_PRICE }}
+          PRICE_CHANGE_MIN: ${{ vars.PRICE_CHANGE_MIN }}
           SMTP_USER: ${{ secrets.SMTP_USER }}
           SMTP_PASS: ${{ secrets.SMTP_PASS }}
           EMAIL_TO: ${{ vars.EMAIL_TO }}

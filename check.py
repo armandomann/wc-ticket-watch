@@ -57,6 +57,10 @@ QUANTITY = int(env("QUANTITY", "6"))
 MAX_PRICE = env("MAX_PRICE")
 MAX_PRICE = float(MAX_PRICE) if MAX_PRICE else None
 
+# Ignore price wobbles smaller than this ($/ticket) so trivial fluctuations
+# don't trigger a "price change" email every run. Raise it if StubHub is noisy.
+PRICE_CHANGE_MIN = float(env("PRICE_CHANGE_MIN", "25"))
+
 STATE_FILE = env("STATE_FILE", "state.json")
 
 SMTP_HOST = env("SMTP_HOST", "smtp.gmail.com")
@@ -134,13 +138,19 @@ def source_stubhub():
     for o in seen.values():
         aq = o.get("availableQuantities") or []
         if QUANTITY in aq and o.get("isSeatedTogether", False):
+            lid = o.get("listingId")
+            sep = "&" if "?" in STUBHUB_URL else "?"
+            url = f"{STUBHUB_URL}{sep}quantity={QUANTITY}"
+            if lid is not None:
+                url += f"&listingId={lid}"
             offers.append({
                 "source": "StubHub",
                 "price": float(o["rawPrice"]),
                 "qty": o.get("availableTickets"),
                 "section": o.get("section"),
                 "row": o.get("row"),
-                "url": STUBHUB_URL,
+                "listing_id": lid,
+                "url": url,
             })
     return offers, None
 
@@ -191,13 +201,16 @@ def source_vividseats():
             price = o.get("allInPricePerTicket") or o.get("aip")
             if price is None:
                 continue
+            lid = o.get("id") or o.get("listingId")
+            sep = "&" if "?" in VIVID_URL else "?"
             offers.append({
                 "source": "Vivid Seats",
                 "price": float(price),
                 "qty": q,
                 "section": o.get("sectionName"),
                 "row": o.get("row"),
-                "url": VIVID_URL,
+                "listing_id": lid,
+                "url": f"{VIVID_URL}{sep}qty={QUANTITY}",
             })
     return offers, None
 
@@ -218,6 +231,32 @@ def load_state():
 def save_state(state):
     with open(STATE_FILE, "w") as f:
         json.dump(state, f, indent=2)
+
+
+def offer_key(o):
+    """Stable identity for a listing across runs — prefer the market's listing
+    id, else fall back to section/row/qty."""
+    lid = o.get("listing_id")
+    if lid is not None:
+        return f"{o['source']}:{lid}"
+    return f"{o['source']}:{o.get('section')}|{o.get('row')}|{o.get('qty')}"
+
+
+def fmt_offer(o):
+    total = o["price"] * QUANTITY
+    return (f"  ${o['price']:,.0f}/tk · {o['source']} · "
+            f"Sec {o.get('section') or '?'}, Row {o.get('row') or '?'} · "
+            f"listing of {o.get('qty')} · ${total:,.0f} for {QUANTITY}\n"
+            f"    {o['url']}")
+
+
+def fmt_change(o, old):
+    arrow = "🔻" if o["price"] < old else "🔺"
+    total = o["price"] * QUANTITY
+    return (f"  {arrow} ${old:,.0f} → ${o['price']:,.0f}/tk · {o['source']} · "
+            f"Sec {o.get('section') or '?'}, Row {o.get('row') or '?'} · "
+            f"listing of {o.get('qty')} · ${total:,.0f} for {QUANTITY}\n"
+            f"    {o['url']}")
 
 
 def send_email(subject, body):
@@ -275,58 +314,75 @@ def main():
         sys.exit(1)
     state["consecutive_fetch_failures"] = 0
 
-    prev = state.get("last_best_price")
-
-    if not all_offers:
-        print(f"[result] No source has {QUANTITY} seated together right now.")
-        state.update(last_best_price=None, last_checked=now)
-        save_state(state)
-        return
-
-    all_offers.sort(key=lambda o: o["price"])
-    best = all_offers[0]
-    price = best["price"]
     by_src = {}
-    for o in all_offers:
+    for o in sorted(all_offers, key=lambda o: o["price"]):
         by_src.setdefault(o["source"], o["price"])
     summary = ", ".join(f"{s} ${p:,.0f}" for s, p in sorted(by_src.items(), key=lambda x: x[1]))
-    print(f"[result] cheapest {QUANTITY}-together: ${price:,.0f}/tk on {best['source']}  ({summary})")
 
-    # Alert decision.
-    reasons = []
-    if MAX_PRICE is not None:
-        # Deal mode: only ping when at/below target (and don't re-spam same level).
-        already = state.get("notified_at_or_below") is True
-        if price <= MAX_PRICE and not (already and prev is not None and price >= prev):
-            reasons.append(f"AT/BELOW your ${MAX_PRICE:,.0f} target")
-        state["notified_at_or_below"] = price <= MAX_PRICE
+    # Viable = seated-together listings at/below the target (all of them if no
+    # target), sorted cheapest first.
+    viable = sorted(
+        (o for o in all_offers if MAX_PRICE is None or o["price"] <= MAX_PRICE),
+        key=lambda o: o["price"])
+    cap = f" under ${MAX_PRICE:,.0f}/tk" if MAX_PRICE is not None else ""
+    print(f"[result] {len(viable)} viable{cap}"
+          + (f"; cheapest ${viable[0]['price']:,.0f}/tk on {viable[0]['source']}  ({summary})"
+             if viable else ""))
+
+    # Compare against the listings recorded on the previous run to split into
+    # new finds / price changes / unchanged repeats.
+    prev_listings = state.get("listings", {})
+    new_finds, changes, repeats = [], [], []
+    for o in viable:
+        rec = prev_listings.get(offer_key(o))
+        old = rec.get("price") if isinstance(rec, dict) else None
+        if old is None:
+            new_finds.append(o)
+        elif abs(old - o["price"]) >= PRICE_CHANGE_MIN:
+            changes.append((o, old))
+        else:
+            repeats.append(o)
+
+    # Record this run's viable listings as the baseline for next time.
+    state["listings"] = {
+        offer_key(o): {"price": o["price"], "source": o["source"],
+                       "section": o.get("section"), "row": o.get("row"),
+                       "qty": o.get("qty")}
+        for o in viable}
+    state.update(last_best_price=(viable[0]["price"] if viable else None),
+                 last_checked=now, by_source=by_src)
+
+    # Alert only when something is new or a price moved — repeats alone stay quiet.
+    if new_finds or changes:
+        counts = []
+        if new_finds:
+            counts.append(f"{len(new_finds)} new")
+        if changes:
+            counts.append(f"{len(changes)} price change{'s' if len(changes) != 1 else ''}")
+        cheapest = viable[0]
+        subject = (f"⚽ Match 95: {', '.join(counts)} — "
+                   f"best ${cheapest['price']:,.0f}/tk ({cheapest['source']})")
+
+        lines = [f"World Cup Match 95 (Round of 16, Atlanta, Jul 7) — "
+                 f"{QUANTITY} seated together, all-in{cap}",
+                 f"Checked {now}", ""]
+        if new_finds:
+            lines.append(f"🆕 NEW FINDS ({len(new_finds)})")
+            lines += [fmt_offer(o) for o in new_finds]
+            lines.append("")
+        if changes:
+            lines.append(f"🔄 PRICE CHANGES ({len(changes)})")
+            lines += [fmt_change(o, old) for o, old in changes]
+            lines.append("")
+        if repeats:
+            lines.append(f"📋 STILL AVAILABLE ({len(repeats)}) — unchanged since last alert")
+            lines += [fmt_offer(o) for o in repeats]
+            lines.append("")
+        lines.append(f"Cheapest per market: {summary}")
+        send_email(subject, "\n".join(lines))
     else:
-        if prev is None:
-            reasons.append(f"{QUANTITY} seats together are now AVAILABLE")
-        elif price < prev:
-            reasons.append(f"price DROPPED ${prev:,.0f} -> ${price:,.0f}/ticket")
+        print("[email] no new finds or price changes; staying quiet.")
 
-    if reasons:
-        total = price * QUANTITY
-        subject = f"⚽ Match 95: {QUANTITY} together @ ${price:,.0f}/tk on {best['source']} — {reasons[0]}"
-        body = (
-            "World Cup Match 95 (Round of 16, Atlanta, Jul 7) ticket watch:\n\n"
-            + "\n".join(f"• {r}" for r in reasons) + "\n\n"
-            f"BEST: ${price:,.0f}/ticket all-in  (~${total:,.0f} for {QUANTITY})\n"
-            f"  {best['source']} — Section {best['section']}, Row {best['row']} "
-            f"(listing has {best['qty']})\n"
-            f"  {best['url']}\n\n"
-            f"Cheapest per market: {summary}\n"
-            f"Checked {now}.")
-        send_email(subject, body)
-    else:
-        print("[email] nothing worth alerting on; staying quiet.")
-
-    state.update(
-        last_best_price=price, last_checked=now,
-        last_best={"source": best["source"], "section": best["section"],
-                   "row": best["row"], "price": price, "total": price * QUANTITY},
-        by_source=by_src)
     save_state(state)
 
 
