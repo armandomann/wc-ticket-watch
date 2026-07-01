@@ -1,12 +1,12 @@
 name: WC Match 95 ticket watch
 
 # Runs every 30 minutes in GitHub's cloud (works while your Mac is off).
-# Off-peak minutes (:07/:37) instead of :00/:30 — GitHub deprioritizes and
+# Off-peak minutes (:16/:46) instead of :00/:30 — GitHub deprioritizes and
 # often drops cron at the top/half hour under load. Still best-effort; a run
 # may slip a few minutes or occasionally skip.
 on:
   schedule:
-    - cron: "7,37 * * * *"
+    - cron: "16,46 * * * *"
   workflow_dispatch: {}   # manual "Run workflow" button in the Actions tab
 
 permissions:
