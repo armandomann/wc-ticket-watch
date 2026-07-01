@@ -239,19 +239,41 @@ def offer_key(o):
     lid = o.get("listing_id")
     if lid is not None:
         return f"{o['source']}:{lid}"
-    return f"{o['source']}:{o.get('section')}|{o.get('row')}|{o.get('qty')}"
+    return (f"{o['source']}:{norm_label(o.get('section'))}|"
+            f"{norm_label(o.get('row'))}|{o.get('qty')}")
+
+
+def norm_label(v):
+    """Normalize a section/row label so the same seat reads the same across
+    marketplaces: drop 'Section'/'Sec'/'Row' prefixes, punctuation, spaces and
+    case, and strip leading zeros ("Section 05" and "sec5" -> "5"). Best-effort
+    only — it can't reconcile genuinely different naming schemes."""
+    s = str(v or "").strip().lower()
+    s = re.sub(r"^(sections?|sec\.?|sect\.?|rows?|rw\.?)\s*", "", s)
+    s = re.sub(r"[^a-z0-9]", "", s)
+    m = re.match(r"^([a-z]*)0*(\d+)$", s)
+    return m.group(1) + m.group(2) if m else s
+
+
+def disp_label(v):
+    """Clean a label for display: drop a redundant leading 'Section'/'Row'
+    prefix (we add our own) but otherwise keep the site's original text."""
+    s = re.sub(r"^(sections?|sec\.?|sect\.?|rows?|rw\.?)\s*", "", str(v or "").strip(),
+               flags=re.I)
+    return s or "?"
 
 
 def seat_sort_key(o):
-    """Group by seat location so the same tickets listed on different
-    marketplaces sit next to each other; cheapest first as the tiebreak."""
-    return (str(o.get("section") or ""), str(o.get("row") or ""),
+    """Group by (normalized) seat location so the same tickets listed on
+    different marketplaces sit next to each other; cheapest first as the
+    tiebreak."""
+    return (norm_label(o.get("section")), norm_label(o.get("row")),
             o.get("qty") or 0, o["price"])
 
 
 def fmt_offer(o):
     total = o["price"] * QUANTITY
-    return (f"  Sec {o.get('section') or '?'} · Row {o.get('row') or '?'} · "
+    return (f"  Sec {disp_label(o.get('section'))} · Row {disp_label(o.get('row'))} · "
             f"{o.get('qty')} seats · ${o['price']:,.0f}/tk · {o['source']}"
             f"  (${total:,.0f} for {QUANTITY})\n"
             f"    {o['url']}")
@@ -260,7 +282,7 @@ def fmt_offer(o):
 def fmt_change(o, old):
     arrow = "🔻" if o["price"] < old else "🔺"
     total = o["price"] * QUANTITY
-    return (f"  Sec {o.get('section') or '?'} · Row {o.get('row') or '?'} · "
+    return (f"  Sec {disp_label(o.get('section'))} · Row {disp_label(o.get('row'))} · "
             f"{o.get('qty')} seats · {arrow} ${old:,.0f} → ${o['price']:,.0f}/tk · {o['source']}"
             f"  (${total:,.0f} for {QUANTITY})\n"
             f"    {o['url']}")
