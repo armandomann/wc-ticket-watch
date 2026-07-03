@@ -23,6 +23,7 @@ import re
 import smtplib
 import ssl
 import sys
+import time
 import urllib.error
 import urllib.request
 from datetime import datetime, timezone
@@ -55,6 +56,12 @@ VIAGOGO_URL = env(
 
 SOURCES = [s.strip() for s in env("SOURCES", "stubhub,viagogo,vividseats").split(",") if s.strip()]
 QUANTITY = int(env("QUANTITY", "6"))
+
+# StubHub/viagogo embed only a partial, rotating subset of listings per request,
+# so we fetch a few times and union by listingId to cover the inventory. Passes
+# stop early once two in a row add nothing new.
+SH_PASSES = int(env("SH_PASSES", "8"))
+SH_PASS_DELAY = float(env("SH_PASS_DELAY", "1.5"))  # seconds between passes
 
 # Optional target. When set, the watcher goes QUIET and only emails when a
 # 6-together offer is at/below this per-ticket price (a "tell me when it's a deal"
@@ -114,22 +121,19 @@ def _enclosing_object(s, pos):
     return None
 
 
-def _scrape_sh_platform(page_url, source_name):
-    """StubHub and viagogo share one platform: listing data is embedded in the
-    page as JSON objects with rawPrice / listingId / isSeatedTogether /
-    availableQuantities. Prices are already all-in (incl. fees).
-    Returns (offers, error)."""
-    req = urllib.request.Request(page_url, headers={
+def _sh_fetch_once(page_url):
+    """One fetch of a StubHub/viagogo page, returning {listingId: obj} for every
+    embedded listing (or raising on a network/HTTP error). The `?quantity=N`
+    filter biases the embedded set toward listings that can sell N together."""
+    sep = "&" if "?" in page_url else "?"
+    fetch_url = f"{page_url}{sep}quantity={QUANTITY}"
+    req = urllib.request.Request(fetch_url, headers={
         "User-Agent": UA,
         "Accept": "text/html,application/xhtml+xml,*/*;q=0.8",
         "Accept-Language": "en-US,en;q=0.9",
     })
-    try:
-        with urllib.request.urlopen(req, timeout=30) as r:
-            html = r.read().decode("utf-8", "replace")
-    except Exception as e:  # noqa: BLE001
-        return [], f"fetch failed: {e}"
-
+    with urllib.request.urlopen(req, timeout=30) as r:
+        html = r.read().decode("utf-8", "replace")
     seen = {}
     for m in re.finditer(r'"rawPrice"', html):
         txt = _enclosing_object(html, m.start())
@@ -141,6 +145,38 @@ def _scrape_sh_platform(page_url, source_name):
             continue
         if o.get("listingId") is not None and "rawPrice" in o:
             seen[o["listingId"]] = o
+    return seen
+
+
+def _scrape_sh_platform(page_url, source_name):
+    """StubHub and viagogo share one platform: listing data is embedded in the
+    page as JSON objects with rawPrice / listingId / isSeatedTogether /
+    availableQuantities. Prices are already all-in (incl. fees).
+
+    Each request only embeds a partial, rotating subset of the inventory, and
+    the (sparse) N-together listings only rotate in every few requests, so we
+    fetch SH_PASSES times and union by listingId to cover them. Returns
+    (offers, error)."""
+    seen = {}
+    last_err = None
+    errs = 0
+    fetched_ok = False
+    for i in range(SH_PASSES):
+        if i:
+            time.sleep(SH_PASS_DELAY)
+        try:
+            batch = _sh_fetch_once(page_url)
+        except Exception as e:  # noqa: BLE001
+            last_err = f"fetch failed: {e}"
+            errs += 1
+            if errs >= 2:  # persistent block (e.g. 403) — retrying won't help
+                break
+            continue
+        fetched_ok = True
+        errs = 0
+        seen.update(batch)
+    if not fetched_ok:
+        return [], last_err or "fetch failed"
 
     offers = []
     for o in seen.values():
