@@ -1,8 +1,8 @@
 {
   "consecutive_fetch_failures": 0,
   "notified_at_or_below": true,
-  "last_best_price": 2386.37,
-  "last_checked": "2026-07-04 01:18 UTC",
+  "last_best_price": 2167.25,
+  "last_checked": "2026-07-04 01:36 UTC",
   "last_best": {
     "source": "StubHub",
     "section": "325",
@@ -11,9 +11,23 @@
     "total": 9877.44
   },
   "by_source": {
-    "Vivid Seats": 2386.37
+    "Vivid Seats": 2167.25
   },
   "listings": {
+    "Vivid Seats:317|5|8": {
+      "price": 2167.25,
+      "source": "Vivid Seats",
+      "section": "317",
+      "row": "5",
+      "qty": 8
+    },
+    "Vivid Seats:344|13|8": {
+      "price": 2383.94,
+      "source": "Vivid Seats",
+      "section": "344",
+      "row": "13",
+      "qty": 8
+    },
     "Vivid Seats:326|12|6": {
       "price": 2386.37,
       "source": "Vivid Seats",
