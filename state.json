@@ -1,8 +1,8 @@
 {
   "consecutive_fetch_failures": 0,
   "notified_at_or_below": true,
-  "last_best_price": 1590.0,
-  "last_checked": "2026-07-04 12:06 UTC",
+  "last_best_price": 2147.97,
+  "last_checked": "2026-07-04 12:36 UTC",
   "last_best": {
     "source": "StubHub",
     "section": "325",
@@ -11,169 +11,36 @@
     "total": 9877.44
   },
   "by_source": {
-    "Vivid Seats": 1590.0
+    "Vivid Seats": 2147.97
   },
   "listings": {
     "Vivid Seats:326|12|6": {
-      "price": 1590.0,
+      "price": 2147.97,
       "source": "Vivid Seats",
       "section": "326",
       "row": "12",
       "qty": 6
     },
     "Vivid Seats:325|15|8": {
-      "price": 1727.0,
+      "price": 2333.81,
       "source": "Vivid Seats",
       "section": "325",
       "row": "15",
       "qty": 8
     },
     "Vivid Seats:345|6|6": {
-      "price": 1818.0,
+      "price": 2456.43,
       "source": "Vivid Seats",
       "section": "345",
       "row": "6",
       "qty": 6
     },
     "Vivid Seats:317|6|8": {
-      "price": 1832.0,
+      "price": 2474.72,
       "source": "Vivid Seats",
       "section": "317",
       "row": "6",
       "qty": 8
-    },
-    "Vivid Seats:317|13|20": {
-      "price": 1862.0,
-      "source": "Vivid Seats",
-      "section": "317",
-      "row": "13",
-      "qty": 20
-    },
-    "Vivid Seats:102|53|10": {
-      "price": 1926.0,
-      "source": "Vivid Seats",
-      "section": "102",
-      "row": "53",
-      "qty": 10
-    },
-    "Vivid Seats:307|7|9": {
-      "price": 1946.0,
-      "source": "Vivid Seats",
-      "section": "307",
-      "row": "7",
-      "qty": 9
-    },
-    "Vivid Seats:326|12|8": {
-      "price": 1987.0,
-      "source": "Vivid Seats",
-      "section": "326",
-      "row": "12",
-      "qty": 8
-    },
-    "Vivid Seats:344|14|8": {
-      "price": 1987.0,
-      "source": "Vivid Seats",
-      "section": "344",
-      "row": "14",
-      "qty": 8
-    },
-    "Vivid Seats:325|18|6": {
-      "price": 1990.0,
-      "source": "Vivid Seats",
-      "section": "325",
-      "row": "18",
-      "qty": 6
-    },
-    "Vivid Seats:326|16|8": {
-      "price": 2008.0,
-      "source": "Vivid Seats",
-      "section": "326",
-      "row": "16",
-      "qty": 8
-    },
-    "Vivid Seats:102|54|8": {
-      "price": 2018.0,
-      "source": "Vivid Seats",
-      "section": "102",
-      "row": "54",
-      "qty": 8
-    },
-    "Vivid Seats:326|14|12": {
-      "price": 2054.0,
-      "source": "Vivid Seats",
-      "section": "326",
-      "row": "14",
-      "qty": 12
-    },
-    "Vivid Seats:345|5|8": {
-      "price": 2078.0,
-      "source": "Vivid Seats",
-      "section": "345",
-      "row": "5",
-      "qty": 8
-    },
-    "Vivid Seats:318|8|6": {
-      "price": 2081.0,
-      "source": "Vivid Seats",
-      "section": "318",
-      "row": "8",
-      "qty": 6
-    },
-    "Vivid Seats:122|42|8": {
-      "price": 2176.0,
-      "source": "Vivid Seats",
-      "section": "122",
-      "row": "42",
-      "qty": 8
-    },
-    "Vivid Seats:243|12|9": {
-      "price": 2215.0,
-      "source": "Vivid Seats",
-      "section": "243",
-      "row": "12",
-      "qty": 9
-    },
-    "Vivid Seats:334|4|8": {
-      "price": 2244.0,
-      "source": "Vivid Seats",
-      "section": "334",
-      "row": "4",
-      "qty": 8
-    },
-    "Vivid Seats:242|3|8": {
-      "price": 2251.0,
-      "source": "Vivid Seats",
-      "section": "242",
-      "row": "3",
-      "qty": 8
-    },
-    "Vivid Seats:345|3|6": {
-      "price": 2338.0,
-      "source": "Vivid Seats",
-      "section": "345",
-      "row": "3",
-      "qty": 6
-    },
-    "Vivid Seats:105|37|20": {
-      "price": 2429.0,
-      "source": "Vivid Seats",
-      "section": "105",
-      "row": "37",
-      "qty": 20
-    },
-    "Vivid Seats:105|38|20": {
-      "price": 2473.0,
-      "source": "Vivid Seats",
-      "section": "105",
-      "row": "38",
-      "qty": 20
-    },
-    "Vivid Seats:116|45|6": {
-      "price": 2497.0,
-      "source": "Vivid Seats",
-      "section": "116",
-      "row": "45",
-      "qty": 6
     }
   }
 }
