@@ -1,8 +1,8 @@
 {
   "consecutive_fetch_failures": 0,
   "notified_at_or_below": true,
-  "last_best_price": 1119.0,
-  "last_checked": "2026-07-06 22:40 UTC",
+  "last_best_price": 1397.27,
+  "last_checked": "2026-07-06 23:45 UTC",
   "last_best": {
     "source": "StubHub",
     "section": "325",
@@ -11,71 +11,115 @@
     "total": 9877.44
   },
   "by_source": {
-    "Vivid Seats": 1119.0
+    "Vivid Seats": 1397.27,
+    "viagogo": 1486.76,
+    "StubHub": 1621.67
   },
   "listings": {
     "Vivid Seats:326|14|9": {
-      "price": 1119.0,
+      "price": 1397.27,
       "source": "Vivid Seats",
       "section": "326",
       "row": "14",
       "qty": 9
     },
     "Vivid Seats:318|8|6": {
-      "price": 1132.0,
+      "price": 1422.77,
       "source": "Vivid Seats",
       "section": "318",
       "row": "8",
       "qty": 6
     },
+    "viagogo:13255646114": {
+      "price": 1486.76,
+      "source": "viagogo",
+      "section": "244",
+      "row": "7",
+      "qty": 10
+    },
+    "viagogo:13253471473": {
+      "price": 1586.74,
+      "source": "viagogo",
+      "section": "101",
+      "row": "",
+      "qty": 10
+    },
+    "StubHub:13255646114": {
+      "price": 1621.67,
+      "source": "StubHub",
+      "section": "244",
+      "row": "7",
+      "qty": 10
+    },
     "Vivid Seats:345|5|8": {
-      "price": 1211.0,
+      "price": 1636.43,
       "source": "Vivid Seats",
       "section": "345",
       "row": "5",
       "qty": 8
     },
+    "viagogo:13248194553": {
+      "price": 1652.75,
+      "source": "viagogo",
+      "section": "Argentina Supporters Value Tier",
+      "row": "",
+      "qty": 15
+    },
+    "viagogo:13248194610": {
+      "price": 1652.75,
+      "source": "viagogo",
+      "section": "Argentina Supporters Standard Tier",
+      "row": "",
+      "qty": 15
+    },
     "Vivid Seats:345|3|6": {
-      "price": 1274.0,
+      "price": 1721.27,
       "source": "Vivid Seats",
       "section": "345",
       "row": "3",
       "qty": 6
     },
-    "Vivid Seats:233|10|8": {
-      "price": 1579.0,
+    "StubHub:13253471473": {
+      "price": 1730.74,
+      "source": "StubHub",
+      "section": "101",
+      "row": "",
+      "qty": 10
+    },
+    "StubHub:13248194553": {
+      "price": 1802.75,
+      "source": "StubHub",
+      "section": "Argentina Supporters Value Tier",
+      "row": "",
+      "qty": 15
+    },
+    "Vivid Seats:307|7|6": {
+      "price": 1873.17,
       "source": "Vivid Seats",
-      "section": "233",
-      "row": "10",
-      "qty": 8
+      "section": "307",
+      "row": "7",
+      "qty": 6
     },
     "Vivid Seats:105|31|17": {
-      "price": 1666.0,
+      "price": 1913.52,
       "source": "Vivid Seats",
       "section": "105",
       "row": "31",
       "qty": 17
     },
+    "Vivid Seats:233|10|8": {
+      "price": 2132.93,
+      "source": "Vivid Seats",
+      "section": "233",
+      "row": "10",
+      "qty": 8
+    },
     "Vivid Seats:119|29|8": {
-      "price": 1707.0,
+      "price": 2138.32,
       "source": "Vivid Seats",
       "section": "119",
       "row": "29",
       "qty": 8
-    },
-    "Vivid Seats:126c|34|8": {
-      "price": 1988.0,
-      "source": "Vivid Seats",
-      "section": "126C",
-      "row": "34",
-      "qty": 8
-    },
-    "Vivid Seats:109c|23|6": {
-      "price": 2374.0,
-      "source": "Vivid Seats",
-      "section": "109C",
-      "row": "23",
-      "qty": 6
     }
   }
 }
