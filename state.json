@@ -1,8 +1,8 @@
 {
   "consecutive_fetch_failures": 0,
   "notified_at_or_below": true,
-  "last_best_price": 1577.5,
-  "last_checked": "2026-07-06 19:23 UTC",
+  "last_best_price": 1533.98,
+  "last_checked": "2026-07-06 21:14 UTC",
   "last_best": {
     "source": "StubHub",
     "section": "325",
@@ -11,18 +11,18 @@
     "total": 9877.44
   },
   "by_source": {
-    "Vivid Seats": 1577.5
+    "Vivid Seats": 1533.98
   },
   "listings": {
     "Vivid Seats:326|14|12": {
-      "price": 1577.5,
+      "price": 1533.98,
       "source": "Vivid Seats",
       "section": "326",
       "row": "14",
       "qty": 12
     },
     "Vivid Seats:318|8|6": {
-      "price": 1613.75,
+      "price": 1552.1,
       "source": "Vivid Seats",
       "section": "318",
       "row": "8",
@@ -35,12 +35,12 @@
       "row": "5",
       "qty": 8
     },
-    "Vivid Seats:316|2|8": {
-      "price": 1888.87,
+    "Vivid Seats:307|7|6": {
+      "price": 1873.17,
       "source": "Vivid Seats",
-      "section": "316",
-      "row": "2",
-      "qty": 8
+      "section": "307",
+      "row": "7",
+      "qty": 6
     },
     "Vivid Seats:345|3|6": {
       "price": 1950.6,
@@ -49,18 +49,11 @@
       "row": "3",
       "qty": 6
     },
-    "Vivid Seats:307|7|6": {
-      "price": 2051.33,
+    "Vivid Seats:118|23|8": {
+      "price": 2217.95,
       "source": "Vivid Seats",
-      "section": "307",
-      "row": "7",
-      "qty": 6
-    },
-    "Vivid Seats:122|39|8": {
-      "price": 2095.07,
-      "source": "Vivid Seats",
-      "section": "122",
-      "row": "39",
+      "section": "118",
+      "row": "23",
       "qty": 8
     },
     "Vivid Seats:105|31|17": {
@@ -70,22 +63,15 @@
       "row": "31",
       "qty": 17
     },
-    "Vivid Seats:118|23|8": {
-      "price": 2265.94,
+    "Vivid Seats:119|29|8": {
+      "price": 2306.94,
       "source": "Vivid Seats",
-      "section": "118",
-      "row": "23",
-      "qty": 8
-    },
-    "Vivid Seats:118|22|8": {
-      "price": 2404.18,
-      "source": "Vivid Seats",
-      "section": "118",
-      "row": "22",
+      "section": "119",
+      "row": "29",
       "qty": 8
     },
     "Vivid Seats:118|24|8": {
-      "price": 2404.18,
+      "price": 2353.27,
       "source": "Vivid Seats",
       "section": "118",
       "row": "24",
