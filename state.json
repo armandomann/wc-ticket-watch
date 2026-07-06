@@ -1,8 +1,8 @@
 {
   "consecutive_fetch_failures": 0,
   "notified_at_or_below": true,
-  "last_best_price": 1671.21,
-  "last_checked": "2026-07-06 17:06 UTC",
+  "last_best_price": 1227.0,
+  "last_checked": "2026-07-06 17:28 UTC",
   "last_best": {
     "source": "StubHub",
     "section": "325",
@@ -11,85 +11,127 @@
     "total": 9877.44
   },
   "by_source": {
-    "Vivid Seats": 1671.21
+    "Vivid Seats": 1227.0
   },
   "listings": {
     "Vivid Seats:326|14|12": {
-      "price": 1671.21,
+      "price": 1227.0,
       "source": "Vivid Seats",
       "section": "326",
       "row": "14",
       "qty": 12
     },
     "Vivid Seats:318|8|6": {
-      "price": 1733.37,
+      "price": 1255.0,
       "source": "Vivid Seats",
       "section": "318",
       "row": "8",
       "qty": 6
     },
     "Vivid Seats:345|5|8": {
-      "price": 1888.65,
+      "price": 1384.0,
       "source": "Vivid Seats",
       "section": "345",
       "row": "5",
       "qty": 8
     },
     "Vivid Seats:317|13|15": {
-      "price": 1891.15,
+      "price": 1386.0,
       "source": "Vivid Seats",
       "section": "317",
       "row": "13",
       "qty": 15
     },
     "Vivid Seats:345|3|6": {
-      "price": 2027.58,
+      "price": 1486.0,
       "source": "Vivid Seats",
       "section": "345",
       "row": "3",
       "qty": 6
     },
-    "Vivid Seats:307|7|6": {
-      "price": 2069.8,
-      "source": "Vivid Seats",
-      "section": "307",
-      "row": "7",
-      "qty": 6
-    },
     "Vivid Seats:316|2|8": {
-      "price": 2070.95,
+      "price": 1518.0,
       "source": "Vivid Seats",
       "section": "316",
       "row": "2",
       "qty": 8
     },
+    "Vivid Seats:307|7|6": {
+      "price": 1518.0,
+      "source": "Vivid Seats",
+      "section": "307",
+      "row": "7",
+      "qty": 6
+    },
+    "Vivid Seats:325|17|8": {
+      "price": 1640.0,
+      "source": "Vivid Seats",
+      "section": "325",
+      "row": "17",
+      "qty": 8
+    },
     "Vivid Seats:105|31|17": {
-      "price": 2273.02,
+      "price": 1666.0,
       "source": "Vivid Seats",
       "section": "105",
       "row": "31",
       "qty": 17
     },
     "Vivid Seats:122|39|8": {
-      "price": 2317.05,
+      "price": 1698.0,
       "source": "Vivid Seats",
       "section": "122",
       "row": "39",
       "qty": 8
     },
     "Vivid Seats:118|23|8": {
-      "price": 2351.19,
+      "price": 1724.0,
       "source": "Vivid Seats",
       "section": "118",
       "row": "23",
       "qty": 8
     },
     "Vivid Seats:118|24|8": {
-      "price": 2493.13,
+      "price": 1829.0,
       "source": "Vivid Seats",
       "section": "118",
       "row": "24",
       "qty": 8
+    },
+    "Vivid Seats:118|22|8": {
+      "price": 1875.0,
+      "source": "Vivid Seats",
+      "section": "118",
+      "row": "22",
+      "qty": 8
+    },
+    "Vivid Seats:119|29|8": {
+      "price": 2041.0,
+      "source": "Vivid Seats",
+      "section": "119",
+      "row": "29",
+      "qty": 8
+    },
+    "Vivid Seats:116|45|6": {
+      "price": 2099.0,
+      "source": "Vivid Seats",
+      "section": "116",
+      "row": "45",
+      "qty": 6
+    },
+    "Vivid Seats:242|1|8": {
+      "price": 2123.0,
+      "source": "Vivid Seats",
+      "section": "242",
+      "row": "1",
+      "qty": 8
+    },
+    "Vivid Seats:126c|34|10": {
+      "price": 2491.0,
+      "source": "Vivid Seats",
+      "section": "126C",
+      "row": "34",
+      "qty": 10
     }
   }
 }
