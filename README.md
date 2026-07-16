@@ -1,11 +1,16 @@
-# World Cup Match 95 — 6-together ticket watcher
+# World Cup Final — 5-in-a-section ticket watcher
 
-Checks resale markets every 30 minutes for the cheapest listing that can sell
-**6 tickets seated together**, and **emails you** when they first appear or the
-price drops. All prices are **all-in (incl. fees)** so the markets are comparable.
+Checks resale markets every 30 minutes for the cheapest way to get **5 tickets in
+one section** (rows needn't be adjacent — see modes below), and **emails you** when
+an option first appears or the price drops. All prices are **all-in (incl. fees)**
+so the markets are comparable.
 
-**Match 95** = Round of 16, *Winner Match 86 vs Winner Match 88*,
-Mercedes‑Benz Stadium, Atlanta, **Tue Jul 7 2026, 12:00pm ET**.
+**Event** = FIFA World Cup 2026 **Final** (*Match 104*),
+MetLife Stadium, East Rutherford NJ, **Sun Jul 19 2026, 3:00pm ET**.
+
+> Retargeting: event URLs + params live in `check.py` / the workflow. To watch a
+> different match, change `STUBHUB_URL` / `VIVID_URL` / `VIAGOGO_URL`, `QUANTITY`,
+> `GROUP`, and `MAX_PRICE`.
 
 ## Sources
 | Source | How | Notes |
@@ -18,14 +23,18 @@ Mercedes‑Benz Stadium, Atlanta, **Tue Jul 7 2026, 12:00pm ET**.
 > they're not included. This watches **resale/above face value** only — not FIFA's
 > official face‑value marketplace (that needs a logged‑in FIFA account).
 
-It only counts listings that will actually sell you **6 in one block** — the cheapest
-*ticket* on a page often only sells in 2s. State is kept in `state.json` so you're
-emailed on a **first appearance** or **price drop**, not 48× a day.
+State is kept in `state.json` so you're emailed on a **first appearance** or **price
+drop**, not 48× a day.
 
-## Alert modes
-- **Default** (no `MAX_PRICE`): email when 6‑together first appears and on every drop.
-- **Deal mode** (`MAX_PRICE=2000`): stay silent and only email when 6‑together is at
-  or below **$2,000/ticket**. Market is ~**$2,270/ticket** all‑in as of Jun 30.
+## Grouping modes (`GROUP`)
+- **`section`** (default): assemble `QUANTITY` seats within a **single section**,
+  possibly across several listings — rows needn't be adjacent. Each listing must
+  still be at/below `MAX_PRICE`. Good when whole blocks of N-together are scarce.
+- **`together`**: a single listing selling `QUANTITY` seats **seated together**.
+
+`MAX_PRICE` is a **per-ticket ceiling** (each listing in a section package must be
+at/below it); leave blank for no ceiling. Current config: **5 in a section, ≤ $8,000/tk**
+— the Final's floor was ~**$7,900/tk** as of Jul 16.
 
 ---
 

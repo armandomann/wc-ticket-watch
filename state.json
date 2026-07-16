@@ -1,15 +1,1 @@
-{
-  "consecutive_fetch_failures": 21,
-  "notified_at_or_below": true,
-  "last_best_price": null,
-  "last_checked": "2026-07-08 01:11 UTC",
-  "last_best": {
-    "source": "StubHub",
-    "section": "325",
-    "row": "13",
-    "price": 1646.24,
-    "total": 9877.44
-  },
-  "by_source": {},
-  "listings": {}
-}
+{}

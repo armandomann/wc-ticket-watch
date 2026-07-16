@@ -1,4 +1,4 @@
-name: WC Match 95 ticket watch
+name: WC Final ticket watch
 
 # Runs every 30 minutes in GitHub's cloud (works while your Mac is off).
 # Off-peak minutes (:16/:46) instead of :00/:30 — GitHub deprioritizes and
@@ -26,7 +26,7 @@ jobs:
         with:
           python-version: "3.12"
 
-      # Only needed for the Vivid Seats (browser) source. StubHub works without it.
+      # Only needed for the Vivid Seats (browser) source.
       - name: Install browser for Vivid Seats source
         run: |
           pip install playwright
@@ -34,18 +34,17 @@ jobs:
 
       - name: Check ticket prices
         env:
-          # SOURCES: use "stubhub,vividseats" for both, or "stubhub" if Vivid gets
-          # bot-challenged on GitHub's IPs (see README).
+          # Event-defining params are hardcoded here (not repo Variables) so any
+          # leftover Match-95 vars can't override the Final config. Event URLs come
+          # from check.py's built-in Final defaults — leave the *_URL vars unset.
+          QUANTITY: "5"
+          GROUP: "section"           # 5 in one section, rows needn't be adjacent
+          MAX_PRICE: "8000"          # per-ticket ceiling (Final floor ~$7.9k/tk)
           SOURCES: ${{ vars.SOURCES || 'stubhub,viagogo,vividseats' }}
-          STUBHUB_URL: ${{ vars.STUBHUB_URL }}
-          VIVID_URL: ${{ vars.VIVID_URL }}
-          VIAGOGO_URL: ${{ vars.VIAGOGO_URL }}
-          QUANTITY: ${{ vars.QUANTITY }}
-          MAX_PRICE: ${{ vars.MAX_PRICE }}
-          PRICE_CHANGE_MIN: ${{ vars.PRICE_CHANGE_MIN }}
+          PRICE_CHANGE_MIN: ${{ vars.PRICE_CHANGE_MIN || '100' }}
           SMTP_USER: ${{ secrets.SMTP_USER }}
           SMTP_PASS: ${{ secrets.SMTP_PASS }}
-          EMAIL_TO: ${{ vars.EMAIL_TO }}
+          EMAIL_TO: ${{ vars.EMAIL_TO || 'armandomann@gmail.com' }}
         run: python3 check.py
 
       - name: Persist state

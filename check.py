@@ -41,21 +41,32 @@ def env(name, default=""):
     v = os.environ.get(name)
     return v if v not in (None, "") else default
 
-# Match 95 = Round of 16, W86 vs W88, Mercedes-Benz Stadium Atlanta, Jul 7 2026.
+# Final = Match 104, MetLife Stadium (East Rutherford, NJ), Sun Jul 19 2026.
 STUBHUB_URL = env(
     "STUBHUB_URL",
-    "https://www.stubhub.com/world-cup-atlanta-tickets-7-7-2026/event/155049347/").strip()
+    "https://www.stubhub.com/world-cup-east-rutherford-tickets-7-19-2026/event/153020449/").strip()
 VIVID_URL = env(
     "VIVID_URL",
-    "https://www.vividseats.com/world-cup-soccer-tickets-mercedes-benz-stadium-7-7-2026--sports-soccer/production/5080860").strip()
+    "https://www.vividseats.com/world-cup-soccer-tickets-hard-rock-stadium-7-19-2026--sports-soccer/production/5080877").strip()
 # viagogo is StubHub's sibling platform (same event id, same embedded data
 # format) but often prices differently — good for cross-market comparison.
 VIAGOGO_URL = env(
     "VIAGOGO_URL",
-    "https://www.viagogo.com/Sports-Tickets/Soccer/Soccer-Tournament/World-Cup-Tickets/E-155049347").strip()
+    "https://www.viagogo.com/Sports-Tickets/Soccer/Soccer-Tournament/World-Cup-Tickets/E-153020449").strip()
+
+# Short tag + full description used in email subject/body.
+EVENT_TAG = env("EVENT_TAG", "WC Final")
+EVENT_LABEL = env("EVENT_LABEL", "World Cup Final (Match 104, MetLife Stadium, Jul 19)")
 
 SOURCES = [s.strip() for s in env("SOURCES", "stubhub,viagogo,vividseats").split(",") if s.strip()]
-QUANTITY = int(env("QUANTITY", "6"))
+QUANTITY = int(env("QUANTITY", "5"))
+
+# Grouping mode:
+#   together — one listing must sell QUANTITY seats seated together (original).
+#   section  — QUANTITY seats assembled within a single section, possibly across
+#              several listings (rows needn't be adjacent). Each component listing
+#              must still be at/below MAX_PRICE.
+GROUP = env("GROUP", "section").strip().lower()
 
 # StubHub/viagogo embed only a partial, rotating subset of listings per request,
 # so we fetch a few times and union by listingId to cover the inventory. Passes
@@ -63,10 +74,10 @@ QUANTITY = int(env("QUANTITY", "6"))
 SH_PASSES = int(env("SH_PASSES", "8"))
 SH_PASS_DELAY = float(env("SH_PASS_DELAY", "1.5"))  # seconds between passes
 
-# Optional target. When set, the watcher goes QUIET and only emails when a
-# 6-together offer is at/below this per-ticket price (a "tell me when it's a deal"
-# mode). When unset, it emails on first appearance and every price drop.
-MAX_PRICE = env("MAX_PRICE")
+# Per-ticket price ceiling. Only listings at/below this count. In section mode
+# every component of a section package must be at/below it. Set MAX_PRICE="" to
+# disable (then every listing counts). Defaults to $8k/tk for the Final.
+MAX_PRICE = env("MAX_PRICE", "8000")
 MAX_PRICE = float(MAX_PRICE) if MAX_PRICE else None
 
 # Ignore price wobbles smaller than this ($/ticket) so trivial fluctuations
@@ -178,25 +189,36 @@ def _scrape_sh_platform(page_url, source_name):
     if not fetched_ok:
         return [], last_err or "fetch failed"
 
-    offers = []
+    # Emit every listing (normalized); main() applies the grouping-mode filter.
+    listings = []
     for o in seen.values():
+        try:
+            price = float(o["rawPrice"])
+        except (TypeError, ValueError, KeyError):
+            continue
         aq = o.get("availableQuantities") or []
-        if QUANTITY in aq and o.get("isSeatedTogether", False):
-            lid = o.get("listingId")
-            sep = "&" if "?" in page_url else "?"
-            url = f"{page_url}{sep}quantity={QUANTITY}"
-            if lid is not None:
-                url += f"&listingId={lid}"
-            offers.append({
-                "source": source_name,
-                "price": float(o["rawPrice"]),
-                "qty": o.get("availableTickets"),
-                "section": o.get("section"),
-                "row": o.get("row"),
-                "listing_id": lid,
-                "url": url,
-            })
-    return offers, None
+        try:
+            avail = int(o.get("availableTickets") or (max(aq) if aq else 0))
+        except (TypeError, ValueError):
+            avail = 0
+        lid = o.get("listingId")
+        sep = "&" if "?" in page_url else "?"
+        url = f"{page_url}{sep}quantity={QUANTITY}"
+        if lid is not None:
+            url += f"&listingId={lid}"
+        listings.append({
+            "source": source_name,
+            "price": price,
+            "qty": avail,
+            "avail": avail,
+            "avail_qtys": aq,
+            "together": bool(o.get("isSeatedTogether", False)),
+            "section": o.get("section"),
+            "row": o.get("row"),
+            "listing_id": lid,
+            "url": url,
+        })
+    return listings, None
 
 
 def source_stubhub():
@@ -242,29 +264,31 @@ def source_vividseats():
     if not body or "tickets" not in body:
         return [], "no listings captured (challenge or layout change?)"
 
-    offers = []
+    # Emit every listing (normalized); main() applies the grouping-mode filter.
+    listings = []
     for o in body["tickets"]:
         try:
             q = int(o.get("quantity") or 0)
         except (TypeError, ValueError):
             q = 0
-        together = "Seated Together" in (o.get("perks") or [])
-        if together and buyable(q, QUANTITY):
-            price = o.get("allInPricePerTicket") or o.get("aip")
-            if price is None:
-                continue
-            lid = o.get("id") or o.get("listingId")
-            sep = "&" if "?" in VIVID_URL else "?"
-            offers.append({
-                "source": "Vivid Seats",
-                "price": float(price),
-                "qty": q,
-                "section": o.get("sectionName"),
-                "row": o.get("row"),
-                "listing_id": lid,
-                "url": f"{VIVID_URL}{sep}qty={QUANTITY}",
-            })
-    return offers, None
+        price = o.get("allInPricePerTicket") or o.get("aip")
+        if price is None:
+            continue
+        lid = o.get("id") or o.get("listingId")
+        sep = "&" if "?" in VIVID_URL else "?"
+        listings.append({
+            "source": "Vivid Seats",
+            "price": float(price),
+            "qty": q,
+            "avail": q,
+            "avail_qtys": None,
+            "together": "Seated Together" in (o.get("perks") or []),
+            "section": o.get("sectionName"),
+            "row": o.get("row"),
+            "listing_id": lid,
+            "url": f"{VIVID_URL}{sep}qty={QUANTITY}",
+        })
+    return listings, None
 
 
 SOURCE_FUNCS = {"stubhub": source_stubhub, "viagogo": source_viagogo,
@@ -325,6 +349,11 @@ def seat_sort_key(o):
 
 
 def fmt_offer(o):
+    if "breakdown" in o:  # section package
+        return (f"  Sec {disp_label(o.get('section'))} · {QUANTITY} in section · "
+                f"avg ${o['price']:,.0f}/tk · {o['source']}  (${o['total']:,.0f} for {QUANTITY})\n"
+                f"    seats: {o['breakdown']}\n"
+                f"    {o['url']}")
     total = o["price"] * QUANTITY
     return (f"  Sec {disp_label(o.get('section'))} · Row {disp_label(o.get('row'))} · "
             f"{o.get('qty')} seats · ${o['price']:,.0f}/tk · {o['source']}"
@@ -334,11 +363,78 @@ def fmt_offer(o):
 
 def fmt_change(o, old):
     arrow = "🔻" if o["price"] < old else "🔺"
+    if "breakdown" in o:  # section package
+        return (f"  Sec {disp_label(o.get('section'))} · {QUANTITY} in section · "
+                f"{arrow} ${old:,.0f} → ${o['price']:,.0f}/tk avg · {o['source']}\n"
+                f"    seats: {o['breakdown']}\n"
+                f"    {o['url']}")
     total = o["price"] * QUANTITY
     return (f"  Sec {disp_label(o.get('section'))} · Row {disp_label(o.get('row'))} · "
             f"{o.get('qty')} seats · {arrow} ${old:,.0f} → ${o['price']:,.0f}/tk · {o['source']}"
             f"  (${total:,.0f} for {QUANTITY})\n"
             f"    {o['url']}")
+
+
+# ---- Grouping: pick the viable offers for the configured mode ---------------
+
+def together_offers(listings):
+    """`together` mode: a single listing that can sell QUANTITY seated together,
+    at/below MAX_PRICE. Cheapest first."""
+    out = []
+    for o in listings:
+        if MAX_PRICE is not None and o["price"] > MAX_PRICE:
+            continue
+        aq = o.get("avail_qtys")
+        ok = o.get("together") and (
+            (aq and QUANTITY in aq) or (not aq and buyable(o.get("avail") or 0, QUANTITY)))
+        if ok:
+            out.append(o)
+    return sorted(out, key=lambda o: o["price"])
+
+
+def section_packages(listings):
+    """`section` mode: assemble QUANTITY seats within one (source, section),
+    taking the cheapest seats first from listings at/below MAX_PRICE. Rows need
+    not be adjacent. Returns one package "offer" per qualifying section (shaped
+    like a listing so the rest of the pipeline is unchanged), cheapest first."""
+    from collections import defaultdict
+    groups = defaultdict(list)
+    for o in listings:
+        if MAX_PRICE is not None and o["price"] > MAX_PRICE:
+            continue
+        if (o.get("avail") or 0) <= 0:
+            continue
+        groups[(o["source"], norm_label(o.get("section")))].append(o)
+
+    packages = []
+    for (source, secnorm), ls in groups.items():
+        ls.sort(key=lambda o: o["price"])
+        got, cost, parts = 0, 0.0, []
+        for o in ls:
+            take = min(o["avail"], QUANTITY - got)
+            if take <= 0:
+                break
+            got += take
+            cost += take * o["price"]
+            parts.append((take, o))
+            if got >= QUANTITY:
+                break
+        if got < QUANTITY:
+            continue  # section can't supply QUANTITY under the cap
+        head = parts[0][1]
+        packages.append({
+            "source": source,
+            "price": cost / QUANTITY,      # per-ticket average for the package
+            "total": cost,
+            "qty": QUANTITY,
+            "section": head.get("section"),
+            "row": f"{len(parts)} listing(s)",
+            "breakdown": "; ".join(
+                f"{n}×${p['price']:,.0f}/tk R{disp_label(p.get('row'))}" for n, p in parts),
+            "listing_id": f"pkg:{secnorm}",   # stable per-section identity
+            "url": head.get("url"),
+        })
+    return sorted(packages, key=lambda o: o["price"])
 
 
 def send_email(subject, body):
@@ -364,8 +460,8 @@ def send_email(subject, body):
 
 def main():
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
-    print(f"=== {now}  qty={QUANTITY}  sources={SOURCES}"
-          + (f"  target=${MAX_PRICE:,.0f}/tk" if MAX_PRICE else ""))
+    print(f"=== {now}  qty={QUANTITY}  mode={GROUP}  sources={SOURCES}"
+          + (f"  cap=${MAX_PRICE:,.0f}/tk" if MAX_PRICE else ""))
 
     all_offers = []
     errors = {}
@@ -378,7 +474,7 @@ def main():
         if err:
             errors[name] = err
             print(f"[{name}] ERROR: {err}")
-        print(f"[{name}] {len(offers)} offers of {QUANTITY} seated together")
+        print(f"[{name}] {len(offers)} listings")
         all_offers.extend(offers)
 
     state = load_state()
@@ -396,18 +492,21 @@ def main():
         sys.exit(1)
     state["consecutive_fetch_failures"] = 0
 
+    # Viable offers for the configured grouping mode, cheapest first.
+    if GROUP == "section":
+        viable = section_packages(all_offers)
+        unit = f"{QUANTITY}-in-section"
+    else:
+        viable = together_offers(all_offers)
+        unit = f"{QUANTITY}-together"
+
     by_src = {}
-    for o in sorted(all_offers, key=lambda o: o["price"]):
+    for o in viable:  # cheapest qualifying offer per source
         by_src.setdefault(o["source"], o["price"])
     summary = ", ".join(f"{s} ${p:,.0f}" for s, p in sorted(by_src.items(), key=lambda x: x[1]))
 
-    # Viable = seated-together listings at/below the target (all of them if no
-    # target), sorted cheapest first.
-    viable = sorted(
-        (o for o in all_offers if MAX_PRICE is None or o["price"] <= MAX_PRICE),
-        key=lambda o: o["price"])
     cap = f" under ${MAX_PRICE:,.0f}/tk" if MAX_PRICE is not None else ""
-    print(f"[result] {len(viable)} viable{cap}"
+    print(f"[result] {len(viable)} viable {unit}{cap}"
           + (f"; cheapest ${viable[0]['price']:,.0f}/tk on {viable[0]['source']}  ({summary})"
              if viable else ""))
 
@@ -442,11 +541,12 @@ def main():
         if changes:
             counts.append(f"{len(changes)} price change{'s' if len(changes) != 1 else ''}")
         cheapest = viable[0]
-        subject = (f"⚽ Match 95: {', '.join(counts)} — "
+        subject = (f"⚽ {EVENT_TAG}: {', '.join(counts)} — "
                    f"best ${cheapest['price']:,.0f}/tk ({cheapest['source']})")
 
-        lines = [f"World Cup Match 95 (Round of 16, Atlanta, Jul 7) — "
-                 f"{QUANTITY} seated together, all-in{cap}",
+        mode_desc = (f"{QUANTITY} in one section (rows needn't be adjacent)"
+                     if GROUP == "section" else f"{QUANTITY} seated together")
+        lines = [f"{EVENT_LABEL} — {mode_desc}, all-in{cap}",
                  f"Checked {now}", ""]
         if new_finds:
             lines.append(f"🆕 NEW FINDS ({len(new_finds)})")
