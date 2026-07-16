@@ -76,8 +76,8 @@ SH_PASS_DELAY = float(env("SH_PASS_DELAY", "1.5"))  # seconds between passes
 
 # Per-ticket price ceiling. Only listings at/below this count. In section mode
 # every component of a section package must be at/below it. Set MAX_PRICE="" to
-# disable (then every listing counts). Defaults to $8k/tk for the Final.
-MAX_PRICE = env("MAX_PRICE", "8000")
+# disable (then every listing counts). Defaults to $8.5k/tk for the Final.
+MAX_PRICE = env("MAX_PRICE", "8500")
 MAX_PRICE = float(MAX_PRICE) if MAX_PRICE else None
 
 # Ignore price wobbles smaller than this ($/ticket) so trivial fluctuations

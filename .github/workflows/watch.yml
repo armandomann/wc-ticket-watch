@@ -39,7 +39,7 @@ jobs:
           # from check.py's built-in Final defaults — leave the *_URL vars unset.
           QUANTITY: "5"
           GROUP: "section"           # 5 in one section, rows needn't be adjacent
-          MAX_PRICE: "8000"          # per-ticket ceiling (Final floor ~$7.9k/tk)
+          MAX_PRICE: "8500"          # per-ticket ceiling (Final floor ~$7.5k/tk)
           SOURCES: ${{ vars.SOURCES || 'stubhub,viagogo,vividseats' }}
           PRICE_CHANGE_MIN: ${{ vars.PRICE_CHANGE_MIN || '100' }}
           SMTP_USER: ${{ secrets.SMTP_USER }}

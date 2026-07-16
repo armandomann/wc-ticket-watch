@@ -33,8 +33,8 @@ drop**, not 48× a day.
 - **`together`**: a single listing selling `QUANTITY` seats **seated together**.
 
 `MAX_PRICE` is a **per-ticket ceiling** (each listing in a section package must be
-at/below it); leave blank for no ceiling. Current config: **5 in a section, ≤ $8,000/tk**
-— the Final's floor was ~**$7,900/tk** as of Jul 16.
+at/below it); leave blank for no ceiling. Current config: **5 in a section, ≤ $8,500/tk**
+— the Final's floor was ~**$7,500/tk** as of Jul 16.
 
 ---
 
