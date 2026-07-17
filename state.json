@@ -1,13 +1,6 @@
 {
   "consecutive_fetch_failures": 0,
   "listings": {
-    "Vivid Seats:pkg:305": {
-      "price": 7915.302000000001,
-      "source": "Vivid Seats",
-      "section": "305",
-      "row": "3 listing(s)",
-      "qty": 5
-    },
     "Vivid Seats:pkg:328": {
       "price": 8014.338000000001,
       "source": "Vivid Seats",
@@ -16,21 +9,14 @@
       "qty": 5
     },
     "Vivid Seats:pkg:block350": {
-      "price": 8064.414000000002,
+      "price": 8108.2880000000005,
       "source": "Vivid Seats",
       "section": "Block 350",
       "row": "2 listing(s)",
       "qty": 5
     },
-    "Vivid Seats:pkg:350": {
-      "price": 8077.695999999999,
-      "source": "Vivid Seats",
-      "section": "350",
-      "row": "3 listing(s)",
-      "qty": 5
-    },
     "Vivid Seats:pkg:321": {
-      "price": 8122.928,
+      "price": 8120.636,
       "source": "Vivid Seats",
       "section": "321",
       "row": "2 listing(s)",
@@ -51,14 +37,14 @@
       "qty": 5
     },
     "Vivid Seats:pkg:346": {
-      "price": 8236.279999999999,
+      "price": 8266.356,
       "source": "Vivid Seats",
       "section": "346",
       "row": "2 listing(s)",
       "qty": 5
     },
     "Vivid Seats:pkg:block348": {
-      "price": 8269.581999999999,
+      "price": 8282.78,
       "source": "Vivid Seats",
       "section": "Block 348",
       "row": "2 listing(s)",
@@ -78,24 +64,17 @@
       "row": "2 listing(s)",
       "qty": 5
     },
-    "Vivid Seats:pkg:347": {
-      "price": 8449.810000000001,
-      "source": "Vivid Seats",
-      "section": "347",
-      "row": "2 listing(s)",
-      "qty": 5
-    },
     "Vivid Seats:pkg:301": {
-      "price": 8466.554,
+      "price": 8453.725999999999,
       "source": "Vivid Seats",
       "section": "301",
       "row": "2 listing(s)",
       "qty": 5
     }
   },
-  "last_best_price": 7915.302000000001,
-  "last_checked": "2026-07-17 10:25 UTC",
+  "last_best_price": 8014.338000000001,
+  "last_checked": "2026-07-17 11:57 UTC",
   "by_source": {
-    "Vivid Seats": 7915.302000000001
+    "Vivid Seats": 8014.338000000001
   }
 }
