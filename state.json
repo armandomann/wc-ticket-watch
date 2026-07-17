@@ -15,18 +15,18 @@
       "row": "2 listing(s)",
       "qty": 5
     },
-    "Vivid Seats:pkg:350": {
-      "price": 8066.7,
-      "source": "Vivid Seats",
-      "section": "350",
-      "row": "3 listing(s)",
-      "qty": 5
-    },
     "Vivid Seats:pkg:block350": {
-      "price": 8096.370000000001,
+      "price": 8064.414000000002,
       "source": "Vivid Seats",
       "section": "Block 350",
       "row": "2 listing(s)",
+      "qty": 5
+    },
+    "Vivid Seats:pkg:350": {
+      "price": 8077.695999999999,
+      "source": "Vivid Seats",
+      "section": "350",
+      "row": "3 listing(s)",
       "qty": 5
     },
     "Vivid Seats:pkg:321": {
@@ -50,31 +50,10 @@
       "row": "3 listing(s)",
       "qty": 5
     },
-    "Vivid Seats:pkg:304": {
-      "price": 8183.603999999999,
-      "source": "Vivid Seats",
-      "section": "304",
-      "row": "2 listing(s)",
-      "qty": 5
-    },
     "Vivid Seats:pkg:346": {
       "price": 8236.279999999999,
       "source": "Vivid Seats",
       "section": "346",
-      "row": "2 listing(s)",
-      "qty": 5
-    },
-    "Vivid Seats:pkg:348": {
-      "price": 8245.952,
-      "source": "Vivid Seats",
-      "section": "348",
-      "row": "3 listing(s)",
-      "qty": 5
-    },
-    "Vivid Seats:pkg:335": {
-      "price": 8256.676,
-      "source": "Vivid Seats",
-      "section": "335",
       "row": "2 listing(s)",
       "qty": 5
     },
@@ -99,8 +78,15 @@
       "row": "2 listing(s)",
       "qty": 5
     },
+    "Vivid Seats:pkg:347": {
+      "price": 8449.810000000001,
+      "source": "Vivid Seats",
+      "section": "347",
+      "row": "2 listing(s)",
+      "qty": 5
+    },
     "Vivid Seats:pkg:301": {
-      "price": 8455.562,
+      "price": 8466.554,
       "source": "Vivid Seats",
       "section": "301",
       "row": "2 listing(s)",
@@ -108,7 +94,7 @@
     }
   },
   "last_best_price": 7915.302000000001,
-  "last_checked": "2026-07-17 08:27 UTC",
+  "last_checked": "2026-07-17 10:25 UTC",
   "by_source": {
     "Vivid Seats": 7915.302000000001
   }
