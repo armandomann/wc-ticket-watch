@@ -1,24 +1,7 @@
 {
   "consecutive_fetch_failures": 0,
-  "listings": {
-    "Vivid Seats:pkg:344": {
-      "price": 8205.022,
-      "source": "Vivid Seats",
-      "section": "344",
-      "row": "2 listing(s)",
-      "qty": 5
-    },
-    "Vivid Seats:pkg:343": {
-      "price": 8236.810000000001,
-      "source": "Vivid Seats",
-      "section": "343",
-      "row": "2 listing(s)",
-      "qty": 5
-    }
-  },
-  "last_best_price": 8205.022,
-  "last_checked": "2026-07-17 19:31 UTC",
-  "by_source": {
-    "Vivid Seats": 8205.022
-  }
+  "listings": {},
+  "last_best_price": null,
+  "last_checked": "2026-07-17 20:31 UTC",
+  "by_source": {}
 }
