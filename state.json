@@ -1,7 +1,94 @@
 {
   "consecutive_fetch_failures": 0,
-  "listings": {},
-  "last_best_price": null,
-  "last_checked": "2026-07-18 17:13 UTC",
-  "by_source": {}
+  "listings": {
+    "Vivid Seats:pkg:block327": {
+      "price": 7544.0,
+      "source": "Vivid Seats",
+      "section": "Block 327",
+      "row": "2 listing(s)",
+      "qty": 5
+    },
+    "Vivid Seats:pkg:306": {
+      "price": 7697.8,
+      "source": "Vivid Seats",
+      "section": "306",
+      "row": "2 listing(s)",
+      "qty": 5
+    },
+    "Vivid Seats:pkg:block322": {
+      "price": 7872.4,
+      "source": "Vivid Seats",
+      "section": "Block 322",
+      "row": "3 listing(s)",
+      "qty": 5
+    },
+    "Vivid Seats:pkg:block350": {
+      "price": 7886.2,
+      "source": "Vivid Seats",
+      "section": "Block 350",
+      "row": "2 listing(s)",
+      "qty": 5
+    },
+    "Vivid Seats:pkg:block330": {
+      "price": 7946.4,
+      "source": "Vivid Seats",
+      "section": "Block 330",
+      "row": "2 listing(s)",
+      "qty": 5
+    },
+    "Vivid Seats:pkg:322": {
+      "price": 7948.6,
+      "source": "Vivid Seats",
+      "section": "322",
+      "row": "3 listing(s)",
+      "qty": 5
+    },
+    "Vivid Seats:pkg:block347": {
+      "price": 7954.4,
+      "source": "Vivid Seats",
+      "section": "Block 347",
+      "row": "2 listing(s)",
+      "qty": 5
+    },
+    "Vivid Seats:pkg:331": {
+      "price": 8025.2,
+      "source": "Vivid Seats",
+      "section": "331",
+      "row": "3 listing(s)",
+      "qty": 5
+    },
+    "Vivid Seats:pkg:343": {
+      "price": 8039.6,
+      "source": "Vivid Seats",
+      "section": "343",
+      "row": "2 listing(s)",
+      "qty": 5
+    },
+    "Vivid Seats:pkg:303": {
+      "price": 8154.6,
+      "source": "Vivid Seats",
+      "section": "303",
+      "row": "3 listing(s)",
+      "qty": 5
+    },
+    "Vivid Seats:pkg:204": {
+      "price": 8208.8,
+      "source": "Vivid Seats",
+      "section": "204",
+      "row": "2 listing(s)",
+      "qty": 5
+    },
+    "Vivid Seats:pkg:305": {
+      "price": 8216.6,
+      "source": "Vivid Seats",
+      "section": "Section 305",
+      "row": "3 listing(s)",
+      "qty": 5
+    }
+  },
+  "last_best_price": 7544.0,
+  "last_checked": "2026-07-18 18:08 UTC",
+  "by_source": {
+    "Vivid Seats": 7544.0
+  }
 }
